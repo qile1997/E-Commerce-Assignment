@@ -119,8 +119,9 @@
             if (CartBtn == false) {
 
                 let filterData = items.find(d => d.Id == dataId);
+                console.log(filterData);
                 storeData.push(filterData);
-
+ 
                 var CreateTr = `<tr>
                                 <td>${filterData.ProductName}</td>
                                  <td>RM ${filterData.ProductPrice}</td>
@@ -145,6 +146,7 @@
                     }
 
                     storeData.forEach(createNewTr);
+                    console.log(storeData);
                 })
 
                 CartBtn = true;
@@ -153,7 +155,6 @@
         })
 
         function createNewTr(item) {
-
             var CreateTr = `<tr>
                                 <td>${item.ProductName}</td>
                                  <td>RM ${item.ProductPrice}</td>
@@ -165,7 +166,6 @@
 
             $("#table").append(CreateTr);
         }
-
     });
 
 

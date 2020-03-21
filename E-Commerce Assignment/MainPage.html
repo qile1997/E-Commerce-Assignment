@@ -1,0 +1,172 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <style>
+
+        .flex-container {
+            display: flex;
+            justify-content: center;
+        }
+
+            .flex-container > div {
+                background-color: #f1f1f1;
+                width: 100px;
+                margin: 10px;
+                text-align: center;
+            }
+
+        .AddToCart {
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        Login as John, logout
+    </div>
+    <hr />
+
+    <div id="item" class="flex-container"></div>
+
+    <div>
+        <table id="table">
+            <tbody>
+                <tr>
+                    <td>Product</td>
+                    <td>Price</td>
+                    <td>Unit</td>
+                    <td>Total</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <!--<div id="output"></div>-->
+    <button>Clear Cart</button>
+</body>
+
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script>
+    var items = [{
+        Id: 1,
+        ProductName: "Logitech Mouse",
+        ProductPrice: 45,
+        ProductQuantity: 1
+    },
+    {
+        Id: 2,
+        ProductName: "Logitech Keyboard",
+        ProductPrice: 50,
+        ProductQuantity: 1
+    }, {
+        Id: 3,
+        ProductName: "Hp Mouse",
+        ProductPrice: 35,
+        ProductQuantity: 1
+    }, {
+        Id: 4,
+        ProductName: "Hp Keyboard",
+        ProductPrice: 32,
+        ProductQuantity: 1
+    }, {
+        Id: 5,
+        ProductName: "Microsoft Mouse",
+        ProductPrice: 43,
+        ProductQuantity: 1
+    }, {
+        Id: 6,
+        ProductName: "Microsoft Keyboard",
+        ProductPrice: 39,
+        ProductQuantity: 1
+    },]
+
+    var OrderSummary = {
+        Subtotal: 0,
+        ShippingFee: 10,
+        TotalOutput: 0,
+    }
+
+    //To store data for checking
+    var storeData = [];
+
+    $(document).ready(function () {
+        let htmlProducts = '';
+
+        items.forEach(function (product) {
+            htmlProducts = `<div>\
+                <h2>${product.ProductName}</h2>
+                <p>RM ${product.ProductPrice}</p>
+                <p><button class=AddToCart data-id="${product.Id}">Add to Cart</button></p>\
+                </div>`;
+
+            $("#item").append(htmlProducts);
+        })
+
+        $(".AddToCart").on("click", function () {
+            //console.log(this);
+            var dataId = $(this).attr("data-id");
+
+            //var filterItems = storeData.find(d => d.Id == dataId);
+            let CartBtn = false;
+            let arr = [...storeData]
+
+            if (arr.some(item => item.Id == dataId)) {
+                CartBtn = true;
+            }
+
+            if (CartBtn == false) {
+
+                let filterData = items.find(d => d.Id == dataId);
+                storeData.push(filterData);
+
+                var CreateTr = `<tr>
+                                <td>${filterData.ProductName}</td>
+                                 <td>RM ${filterData.ProductPrice}</td>
+                                <td><button value=+>+</button> ${filterData.ProductQuantity} <button value=->-</button></td>
+                                <td></td>
+                                <td><button class=del data-id=${filterData.Id}>x</button><td>
+                                </tr>
+                                `;
+
+                $("#table").append(CreateTr);
+
+                $(".del").click(function () {
+                    
+                    dataId = $(this).attr("data-id");
+                    console.log(this);
+                    storeData = storeData.filter(d => d.Id != dataId);
+                    console.log(storeData);
+                    var tableData = document.getElementById('table');
+
+                    for (var i = tableData.rows.length - 1; i > 0; i--) {
+                        tableData.deleteRow(i);
+                    }
+
+                    storeData.forEach(createNewTr);
+                })
+
+                CartBtn = true;
+
+            }
+        })
+
+        function createNewTr(item) {
+
+            var CreateTr = `<tr>
+                                <td>${item.ProductName}</td>
+                                 <td>RM ${item.ProductPrice}</td>
+                                <td><button value=+>+</button> ${item.ProductQuantity} <button value=->-</button></td>
+                                <td></td>
+                                <td><button class=del data-id=${item.Id}>x</button><td>
+                                </tr>
+                                `;
+
+            $("#table").append(CreateTr);
+        }
+
+    });
+
+
+</script>

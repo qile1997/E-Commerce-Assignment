@@ -29,7 +29,7 @@
 
     <div id="item" class="flex-container"></div>
 
-    <div>
+    <div style="background-color:#f1f1f1">
         <table id="table">
             <tbody>
                 <tr>
@@ -41,9 +41,19 @@
                 </tr>
             </tbody>
         </table>
+        <button onclick="EmptyArray()">Clear Cart</button>
     </div>
-    <!--<div id="output"></div>-->
-    <button>Clear Cart</button>
+
+
+
+    <hr />
+    <div style="background-color:#f1f1f1">
+        <table id="OrderSummary">
+            <tbody>
+            </tbody>
+        </table>
+    </div>
+  
 </body>
 
 </html>
@@ -52,37 +62,31 @@
     var items = [{
         Id: 1,
         ProductName: "Logitech Mouse",
-        ProductPrice: 45,
-        ProductQuantity: 1
+        ProductPrice: 45
     },
     {
         Id: 2,
         ProductName: "Logitech Keyboard",
-        ProductPrice: 50,
-        ProductQuantity: 1
+        ProductPrice: 50
     }, {
         Id: 3,
         ProductName: "Hp Mouse",
-        ProductPrice: 35,
-        ProductQuantity: 1
+        ProductPrice: 35
     }, {
         Id: 4,
         ProductName: "Hp Keyboard",
-        ProductPrice: 32,
-        ProductQuantity: 1
+        ProductPrice: 32
     }, {
         Id: 5,
         ProductName: "Microsoft Mouse",
-        ProductPrice: 43,
-        ProductQuantity: 1
+        ProductPrice: 43
     }, {
         Id: 6,
         ProductName: "Microsoft Keyboard",
-        ProductPrice: 39,
-        ProductQuantity: 1
+        ProductPrice: 39
     },]
 
-    var OrderSummary = {
+    var FinalOrderSummary = {
         Subtotal: 0,
         ShippingFee: 10,
         TotalOutput: 0,
@@ -93,7 +97,6 @@
 
     $(document).ready(function () {
         let htmlProducts = '';
-
         items.forEach(function (product) {
             htmlProducts = `<div>\
                 <h2>${product.ProductName}</h2>
@@ -104,69 +107,120 @@
             $("#item").append(htmlProducts);
         })
 
+        var orderSummary = `<tr><td><div>Order Summary</td></tr>
+                            </br>
+                            <tr><td>Subtotal (${FinalOrderSummary.Subtotal} item)</td></tr>
+                            <tr><td>Shipping Fee RM${FinalOrderSummary.ShippingFee}</td></td>
+                                <tr><td>Total RM${FinalOrderSummary.TotalOutput}</td></tr>`
+
+        $("#OrderSummary").html(orderSummary);
+
         $(".AddToCart").on("click", function () {
-            //console.log(this);
             var dataId = $(this).attr("data-id");
 
-            //var filterItems = storeData.find(d => d.Id == dataId);
-            let CartBtn = false;
             let arr = [...storeData]
 
-            if (arr.some(item => item.Id == dataId)) {
-                CartBtn = true;
+            if (arr.some(d => d.Id == dataId)) {
+                let filterData = storeData.find(d => d.Id == dataId);
+                filterData.ProductQuantity++;
             }
-
-            if (CartBtn == false) {
-
+            else {
                 let filterData = items.find(d => d.Id == dataId);
-                console.log(filterData);
-                storeData.push(filterData);
- 
-                var CreateTr = `<tr>
-                                <td>${filterData.ProductName}</td>
-                                 <td>RM ${filterData.ProductPrice}</td>
-                                <td><button value=+>+</button> ${filterData.ProductQuantity} <button value=->-</button></td>
-                                <td></td>
-                                <td><button class=del data-id=${filterData.Id}>x</button><td>
-                                </tr>
-                                `;
-
-                $("#table").append(CreateTr);
-
-                $(".del").click(function () {
-                    
-                    dataId = $(this).attr("data-id");
-                    console.log(this);
-                    storeData = storeData.filter(d => d.Id != dataId);
-                    console.log(storeData);
-                    var tableData = document.getElementById('table');
-
-                    for (var i = tableData.rows.length - 1; i > 0; i--) {
-                        tableData.deleteRow(i);
-                    }
-
-                    storeData.forEach(createNewTr);
-                    console.log(storeData);
-                })
-
-                CartBtn = true;
-
+                storeData.push({
+                    Id: dataId, ProductName: filterData.ProductName,
+                    ProductPrice: filterData.ProductPrice,
+                    ProductQuantity: 1,
+                    TotalValue: filterData.ProductPrice,
+                });
             }
-        })
 
-        function createNewTr(item) {
+            reCreateTable();
+            printData();
+            OrderSummary();
+        })
+    });
+
+    const delbtn = (dataId) => {
+        reCreateTable();
+        storeData = storeData.filter(d => d.Id != dataId);
+        printData();
+        OrderSummary();
+    }
+
+    const plusbtn = (dataId) => {
+        reCreateTable();
+        _storeData = storeData.find(d => d.Id == dataId);
+        _storeData.ProductQuantity++;
+        _storeData.TotalValue = _storeData.ProductQuantity * _storeData.ProductPrice;
+        printData();
+        OrderSummary();
+    }
+
+    const minusbtn = (dataId) => {
+        reCreateTable();
+        _storeData = storeData.find(d => d.Id == dataId);
+        if (_storeData.ProductQuantity > 1) {
+            _storeData.ProductQuantity--;
+            _storeData.TotalValue = _storeData.ProductQuantity * _storeData.ProductPrice;
+        }
+        printData();
+        OrderSummary();
+    }
+
+    function OrderSummary() {
+
+        var SubtotalSum = 0;
+        var TotalValue = 0;
+
+        for (var i = 0; i < storeData.length; i++) {
+            SubtotalSum += storeData[i].ProductQuantity;
+            TotalValue += storeData[i].ProductPrice * storeData[i].ProductQuantity + FinalOrderSummary.ShippingFee;
+        }
+
+        FinalOrderSummary.TotalOutput = TotalValue;
+        FinalOrderSummary.Subtotal = SubtotalSum;
+
+        var orderSummary = `<tr><td><div>Order Summary</td></tr>
+                            </br>
+                            <tr><td>Subtotal (${FinalOrderSummary.Subtotal} item)</td></tr>
+                            <tr><td>Shipping Fee RM${FinalOrderSummary.ShippingFee}</td></td>
+                                <tr><td>Total RM${FinalOrderSummary.TotalOutput}</td></tr>`
+
+        $("#OrderSummary").html(orderSummary);
+    }
+
+    function printData() {
+        Object.keys(storeData).forEach(function (item) {
+
             var CreateTr = `<tr>
-                                <td>${item.ProductName}</td>
-                                 <td>RM ${item.ProductPrice}</td>
-                                <td><button value=+>+</button> ${item.ProductQuantity} <button value=->-</button></td>
-                                <td></td>
-                                <td><button class=del data-id=${item.Id}>x</button><td>
+                                <td>${storeData[item].ProductName}</td>
+                                 <td>RM ${storeData[item].ProductPrice}</td>
+                                <td><button onclick="plusbtn(${storeData[item].Id})">+</button> ${storeData[item].ProductQuantity} <button onclick="minusbtn(${storeData[item].Id})">-</button></td>
+                                <td>RM ${storeData[item].TotalValue}</td>
+                                <td><button onclick="delbtn(${storeData[item].Id})">x</button><td>
                                 </tr>
                                 `;
 
             $("#table").append(CreateTr);
+        })
+    }
+
+    function reCreateTable() {
+        for (var i = document.getElementById('table').rows.length - 1; i > 0; i--) {
+            document.getElementById('table').deleteRow(i);
         }
-    });
+    }
 
+    function EmptyArray() {
+        storeData = [];
+        FinalOrderSummary.Subtotal = 0;
+        FinalOrderSummary.TotalOutput = 0;
 
+        for (var i = document.getElementById('table').rows.length - 1; i > 0; i--) {
+            document.getElementById('table').deleteRow(i);
+        }
+
+        //Re-print Order Summary
+        OrderSummary();
+    }
 </script>

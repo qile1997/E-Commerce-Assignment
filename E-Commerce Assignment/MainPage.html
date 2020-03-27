@@ -16,8 +16,6 @@
                 text-align: center;
             }
 
-        .AddToCart {
-        }
     </style>
 </head>
 
@@ -98,7 +96,7 @@
     $(document).ready(function () {
         let htmlProducts = '';
         items.forEach(function (product) {
-            htmlProducts = `<div>\
+            htmlProducts = `<div>
                 <h2>${product.ProductName}</h2>
                 <p>RM ${product.ProductPrice}</p>
                 <p><button class=AddToCart data-id="${product.Id}">Add to Cart</button></p>\
@@ -180,7 +178,7 @@
         FinalOrderSummary.TotalOutput = TotalValue;
         FinalOrderSummary.Subtotal = SubtotalSum;
 
-        var orderSummary = `<tr><td><div>Order Summary</td></tr>
+        var orderSummary = `<tr><td>Order Summary</td></tr>
                             </br>
                             <tr><td>Subtotal (${FinalOrderSummary.Subtotal} item)</td></tr>
                             <tr><td>Shipping Fee RM${FinalOrderSummary.ShippingFee}</td></td>
@@ -211,6 +209,7 @@
         }
     }
 
+    //Clear cart button
     function EmptyArray() {
         storeData = [];
         FinalOrderSummary.Subtotal = 0;

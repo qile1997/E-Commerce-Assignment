@@ -15,14 +15,11 @@
                 margin: 10px;
                 text-align: center;
             }
-
     </style>
 </head>
 
 <body>
-    <div>
-        Login as John, logout
-    </div>
+
     <hr />
 
     <div id="item" class="flex-container"></div>
@@ -42,8 +39,6 @@
         <button onclick="EmptyArray()">Clear Cart</button>
     </div>
 
-
-
     <hr />
     <div style="background-color:#f1f1f1">
         <table id="OrderSummary">
@@ -51,7 +46,7 @@
             </tbody>
         </table>
     </div>
-  
+
 </body>
 
 </html>
@@ -59,28 +54,28 @@
 <script>
     var items = [{
         Id: 1,
-        ProductName: "Logitech Mouse",
+        ProductName: "Item A",
         ProductPrice: 45
     },
     {
         Id: 2,
-        ProductName: "Logitech Keyboard",
+        ProductName: "Item B",
         ProductPrice: 50
     }, {
         Id: 3,
-        ProductName: "Hp Mouse",
+        ProductName: "Item C",
         ProductPrice: 35
     }, {
         Id: 4,
-        ProductName: "Hp Keyboard",
+        ProductName: "Item D",
         ProductPrice: 32
     }, {
         Id: 5,
-        ProductName: "Microsoft Mouse",
+        ProductName: "Item E",
         ProductPrice: 43
     }, {
         Id: 6,
-        ProductName: "Microsoft Keyboard",
+        ProductName: "Item F",
         ProductPrice: 39
     },]
 
@@ -97,6 +92,7 @@
         let htmlProducts = '';
         items.forEach(function (product) {
             htmlProducts = `<div>
+                <p>Short Code : ##${+product.Id}</p>
                 <h2>${product.ProductName}</h2>
                 <p>RM ${product.ProductPrice}</p>
                 <p><button class=AddToCart data-id="${product.Id}">Add to Cart</button></p>\
@@ -175,14 +171,27 @@
             TotalValue += storeData[i].ProductPrice * storeData[i].ProductQuantity + FinalOrderSummary.ShippingFee;
         }
 
-        FinalOrderSummary.TotalOutput = TotalValue;
-        FinalOrderSummary.Subtotal = SubtotalSum;
+        if (SubtotalSum > 1) {
+            FinalOrderSummary.TotalOutput = TotalValue - (TotalValue * 0.05);
+            FinalOrderSummary.Subtotal = SubtotalSum;
 
-        var orderSummary = `<tr><td>Order Summary</td></tr>
+            var orderSummary = `<tr><td>Order Summary</td></tr>
+                            </br>
+                            <tr><td>Subtotal (${FinalOrderSummary.Subtotal} item)</td></tr>
+                            <tr><td>Discount (5%)</td></tr>
+                            <tr><td>Shipping Fee RM${FinalOrderSummary.ShippingFee}</td></td>
+                                <tr><td>Total RM${FinalOrderSummary.TotalOutput}</td></tr>`
+        }
+        else {
+            FinalOrderSummary.TotalOutput = TotalValue;
+            FinalOrderSummary.Subtotal = SubtotalSum;
+
+            var orderSummary = `<tr><td>Order Summary</td></tr>
                             </br>
                             <tr><td>Subtotal (${FinalOrderSummary.Subtotal} item)</td></tr>
                             <tr><td>Shipping Fee RM${FinalOrderSummary.ShippingFee}</td></td>
                                 <tr><td>Total RM${FinalOrderSummary.TotalOutput}</td></tr>`
+        }
 
         $("#OrderSummary").html(orderSummary);
     }
